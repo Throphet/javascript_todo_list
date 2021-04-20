@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     let deleteCard = document.getElementsByClassName("delete");
 
-    reload(); // Delete buttons loaded
+    reload(); // Delete buttons loaded  
 
     CARD_ADD.addEventListener("click", function(){
         if(CARD_FORM.style.display === "none"){
