@@ -24,11 +24,17 @@ th {
     display:fixed;
 }
 #uncompletedTasks, #pendingTasks, #completedTasks{
-    margin: 10px;
+    margin: 12px;
+    width: 96%;
 }
+
 .taskCard {
     border-radius: 10px;
     background-color:rgb(29, 36, 36);
+    width:100%;
+    display: fixed;
+    overflow: hidden;
+    flex-grow: 100;
 }
 .taskCard * {
     padding-left: 10px;
@@ -54,4 +60,7 @@ th {
 }
 #cardForm {
     margin-bottom: 30px;
+}
+p {
+    word-wrap: break-word;
 }

@@ -16,6 +16,22 @@ document.addEventListener("DOMContentLoaded", function(){
 
     let deleteCard = document.getElementsByClassName("delete");
 
+    let todoTaskCollection = [];
+    let pendingTaskCollection = [];
+    let completedTaskCollection = [];
+
+    todoTaskCollection = JSON.parse(localStorage.getItem("todoTaskCollection") || "[]");
+    console.log(todoTaskCollection);
+    render();
+
+    document.addEventListener("load", function(){
+        todoTaskCollection = JSON.parse(localStorage.getItem("todoTaskCollection") || "[]");
+        pendingTaskCollection = JSON.parse(localStorage.getItem("pendingTaskCollection") || "[]");
+        completedTaskCollection = JSON.parse(localStorage.getItem("completedTaskCollection") || "[]");
+        render();
+        reload();
+    });
+
     reload(); // Delete buttons loaded  
 
     CARD_ADD.addEventListener("click", function(){
@@ -30,30 +46,94 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     SUBMIT_CARD.addEventListener("click", function(){
-        render(CARD_TITLE.value, CARD_DESCRIPTION.value, today);
+        let taskJSON = {title: CARD_TITLE.value, description: CARD_DESCRIPTION.value, duedate: today};
+        todoTaskCollection.push(taskJSON);
+        render();
         reload();
     });
 
-    function render(title, description, dueDate) {
-        let uncompletedTasks = document.getElementById('uncompletedTasks');
-        let task = `
-        <td class="taskCard">
-            <h2 class="cardTitle">>> ${title}</h2>
-            <p>${description}</p>
-            <p>${dueDate}</p>
-            <div align="center">
-                <span class="delete" style="color: red;">X</span><span class="moveLeft"><</span><span class="moveRight">></span>
-            </div>
-        </td>`
+    
+    function render() {
 
-        uncompletedTasks.innerHTML += task;
+        let 
+            uncompletedTasks = document.getElementById('uncompletedTasks'),
+            pendingTasks = document.getElementById('pendingTasks'),
+            completedTasks = document.getElementById('completedTasks');
+
+        uncompletedTasks.innerHTML = "";
+        pendingTasks.innerHTML = "";
+        completedTasks.innerHTML = "";
+        
+        todoTaskCollection.forEach(function(todoTask, index){
+            let task = `
+                <td class="taskCard">
+                    <p class="identificator" style="display:none;">${index}</p>
+                    <h2 class="cardTitle">>> ${todoTask.title}</h2>
+                    <p>${todoTask.description}</p>
+                    <p>${todoTask.duedate}</p>
+                    <div align="center">
+                        <span class="delete" style="color: red;">X</span><span class="moveLeft"><</span><span class="moveRight">></span>
+                    </div>
+                </td>`
+
+            uncompletedTasks.innerHTML += task;
+            localStorage.setItem("todoTaskCollection", JSON.stringify(todoTaskCollection));
+        });
+        pendingTaskCollection.forEach(function(todoTask){
+            let task = `
+                <td class="taskCard">
+                    <p class="identificator" style="display:none;">${index}</p>
+                    <h2 class="cardTitle">>> ${todoTask.title}</h2>
+                    <p>${todoTask.description}</p>
+                    <p>${todoTask.duedate}</p>
+                    <div align="center">
+                        <span class="delete" style="color: red;">X</span><span class="moveLeft"><</span><span class="moveRight">></span>
+                    </div>
+                </td>`
+
+            pendingTasks.innerHTML += task;
+            localStorage.setItem("pendingTaskCollection", JSON.stringify(pendingTaskCollection));
+        });
+        completedTaskCollection.forEach(function(todoTask){
+            let task = `
+                <td class="taskCard">
+                    <p class="identificator" style="display:none;">${index}</p>
+                    <h2 class="cardTitle">>> ${todoTask.title}</h2>
+                    <p>${todoTask.description}</p>
+                    <p>${todoTask.duedate}</p>
+                    <div align="center">
+                        <span class="delete" style="color: red;">X</span><span class="moveLeft"><</span><span class="moveRight">></span>
+                    </div>
+                </td>`
+
+            completedTasks.innerHTML += task;
+            localStorage.setItem("completedTaskCollection", JSON.stringify(completedTaskCollection));
+        });
     }
 
     function reload(){
         Array.from(deleteCard).forEach(function(card){
             card.addEventListener('click', function(){
                 if(confirm("Are you sure you want to delete this task?")){
+                    let index = card.parentNode.parentNode.getElementsByClassName("identificator")[0].textContent;
+                    console.log(card.parentElement.parentElement.parentElement.parentElement.parentElement.id)
+                    switch(card.parentElement.parentElement.parentElement.parentElement.parentElement.id) {
+                        case "uncompletedTasks":
+                            todoTaskCollection.splice(index, 1);
+                            console.log(todoTaskCollection);
+                            localStorage.setItem("todoTaskCollection", JSON.stringify(todoTaskCollection));
+                            break;
+                        case "pendingTasks":
+                            pendingTaskCollection.splice(index, 1);
+                            localStorage.setItem("pendingTaskCollection", JSON.stringify(pendingTaskCollection));
+                            break;
+                        case "completedTasks":
+                            uncompletedTaskCollection.splice(index, 1);
+                            localStorage.setItem("completedTaskCollection", JSON.stringify(completedTaskCollection));
+                            break;
+                    }
                     card.parentNode.parentNode.parentNode.removeChild(card.parentNode.parentNode);
+                    location.reload();
                 }
             });
         });
