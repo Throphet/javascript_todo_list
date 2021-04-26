@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", () => {
 
     const CARD_ADD = document.getElementById("cardAdd");
     const CARD_FORM = document.getElementById("cardForm");
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function(){
     console.log(todoTaskCollection);
     render();
 
-    document.addEventListener("load", function(){
+    document.addEventListener("load", () => {
         todoTaskCollection = JSON.parse(localStorage.getItem("todoTaskCollection") || "[]");
         pendingTaskCollection = JSON.parse(localStorage.getItem("pendingTaskCollection") || "[]");
         completedTaskCollection = JSON.parse(localStorage.getItem("completedTaskCollection") || "[]");
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     reload(); // Delete buttons loaded  
 
-    CARD_ADD.addEventListener("click", function(){
+    CARD_ADD.addEventListener("click", () => {
         if(CARD_FORM.style.display === "none"){
             CARD_ADD.textContent = CARD_ADD.textContent.slice(0, -1) + "▲";
             CARD_FORM.style.display = "inline";
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
-    SUBMIT_CARD.addEventListener("click", function(){
+    SUBMIT_CARD.addEventListener("click", () => {
         let taskJSON = {title: CARD_TITLE.value, description: CARD_DESCRIPTION.value, duedate: today};
         todoTaskCollection.push(taskJSON);
         render();
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     
-    function render() {
+    function render(){
 
         let 
             uncompletedTasks = document.getElementById('uncompletedTasks'),
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function(){
         pendingTasks.innerHTML = "";
         completedTasks.innerHTML = "";
         
-        todoTaskCollection.forEach(function(todoTask, index){
+        todoTaskCollection.forEach((todoTask, index) => {
             let task = `
                 <td class="taskCard">
                     <p class="identificator" style="display:none;">${index}</p>
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function(){
             uncompletedTasks.innerHTML += task;
             localStorage.setItem("todoTaskCollection", JSON.stringify(todoTaskCollection));
         });
-        pendingTaskCollection.forEach(function(todoTask){
+        pendingTaskCollection.forEach((todoTask) => {
             let task = `
                 <td class="taskCard">
                     <p class="identificator" style="display:none;">${index}</p>
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function(){
             pendingTasks.innerHTML += task;
             localStorage.setItem("pendingTaskCollection", JSON.stringify(pendingTaskCollection));
         });
-        completedTaskCollection.forEach(function(todoTask){
+        completedTaskCollection.forEach((todoTask) => {
             let task = `
                 <td class="taskCard">
                     <p class="identificator" style="display:none;">${index}</p>
@@ -112,15 +112,13 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 
     function reload(){
-        Array.from(deleteCard).forEach(function(card){
-            card.addEventListener('click', function(){
+        Array.from(deleteCard).forEach((card) => {
+            card.addEventListener('click', () => {
                 if(confirm("Are you sure you want to delete this task?")){
                     let index = card.parentNode.parentNode.getElementsByClassName("identificator")[0].textContent;
-                    console.log(card.parentElement.parentElement.parentElement.parentElement.parentElement.id)
                     switch(card.parentElement.parentElement.parentElement.parentElement.parentElement.id) {
                         case "uncompletedTasks":
                             todoTaskCollection.splice(index, 1);
-                            console.log(todoTaskCollection);
                             localStorage.setItem("todoTaskCollection", JSON.stringify(todoTaskCollection));
                             break;
                         case "pendingTasks":
