@@ -116,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
             card.addEventListener('click', () => {
                 if(confirm("Are you sure you want to delete this task?")){
                     let index = card.parentNode.parentNode.getElementsByClassName("identificator")[0].textContent;
+
                     switch(card.parentElement.parentElement.parentElement.parentElement.parentElement.id) {
                         case "uncompletedTasks":
                             todoTaskCollection.splice(index, 1);
@@ -130,6 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             localStorage.setItem("completedTaskCollection", JSON.stringify(completedTaskCollection));
                             break;
                     }
+
                     card.parentNode.parentNode.parentNode.removeChild(card.parentNode.parentNode);
                     location.reload();
                 }
