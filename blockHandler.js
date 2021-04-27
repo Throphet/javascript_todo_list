@@ -21,18 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let completedTaskCollection = [];
 
     todoTaskCollection = JSON.parse(localStorage.getItem("todoTaskCollection") || "[]");
-    console.log(todoTaskCollection);
+    pendingTaskCollection = JSON.parse(localStorage.getItem("pendingTaskCollection") || "[]");
+    completedTaskCollection = JSON.parse(localStorage.getItem("completedTaskCollection") || "[]");
     render();
-
-    document.addEventListener("load", () => {
-        todoTaskCollection = JSON.parse(localStorage.getItem("todoTaskCollection") || "[]");
-        pendingTaskCollection = JSON.parse(localStorage.getItem("pendingTaskCollection") || "[]");
-        completedTaskCollection = JSON.parse(localStorage.getItem("completedTaskCollection") || "[]");
-        render();
-        reload();
-    });
-
-    reload(); // Delete buttons loaded  
+    reload();  
 
     CARD_ADD.addEventListener("click", () => {
         if(CARD_FORM.style.display === "none"){
