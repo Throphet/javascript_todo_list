@@ -64,3 +64,6 @@ th {
 p {
     word-wrap: break-word;
 }
+.delete, .moveLeft, .moveRight {
+    cursor: pointer;
+}
