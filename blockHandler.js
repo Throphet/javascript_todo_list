@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
     today = dd + '.' + mm + '.' + yyyy;
 
     let deleteCard = document.getElementsByClassName("delete");
+    let moveCardLeft = document.getElementsByClassName("moveLeft");
+    let moveCardRight = document.getElementsByClassName("moveRight");
 
     let todoTaskCollection = [];
     let pendingTaskCollection = [];
@@ -31,19 +33,16 @@ document.addEventListener("DOMContentLoaded", () => {
             CARD_ADD.textContent = CARD_ADD.textContent.slice(0, -1) + "▲";
             CARD_FORM.style.display = "inline";
         }
-        else {
-            CARD_ADD.textContent = CARD_ADD.textContent.slice(0, -1) + "▼";
-            CARD_FORM.style.display = "none";
-        }
+        else HideCard();
     });
 
     SUBMIT_CARD.addEventListener("click", () => {
         let taskJSON = {title: CARD_TITLE.value, description: CARD_DESCRIPTION.value, duedate: today};
         todoTaskCollection.push(taskJSON);
+        HideCard();
         render();
         reload();
     });
-
     
     function render(){
 
@@ -71,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
             uncompletedTasks.innerHTML += task;
             localStorage.setItem("todoTaskCollection", JSON.stringify(todoTaskCollection));
         });
-        pendingTaskCollection.forEach((todoTask) => {
+        pendingTaskCollection.forEach((todoTask, index) => {
             let task = `
                 <td class="taskCard">
                     <p class="identificator" style="display:none;">${index}</p>
@@ -86,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
             pendingTasks.innerHTML += task;
             localStorage.setItem("pendingTaskCollection", JSON.stringify(pendingTaskCollection));
         });
-        completedTaskCollection.forEach((todoTask) => {
+        completedTaskCollection.forEach((todoTask, index) => {
             let task = `
                 <td class="taskCard">
                     <p class="identificator" style="display:none;">${index}</p>
@@ -104,8 +103,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function reload(){
+        // Deleting cards
         Array.from(deleteCard).forEach((card) => {
             card.addEventListener('click', () => {
+                console.log(card.parentNode.parentNode.getElementsByClassName("identificator")[0].textContent);
                 if(confirm("Are you sure you want to delete this task?")){
                     let index = card.parentNode.parentNode.getElementsByClassName("identificator")[0].textContent;
 
@@ -119,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             localStorage.setItem("pendingTaskCollection", JSON.stringify(pendingTaskCollection));
                             break;
                         case "completedTasks":
-                            uncompletedTaskCollection.splice(index, 1);
+                            completedTaskCollection.splice(index, 1);
                             localStorage.setItem("completedTaskCollection", JSON.stringify(completedTaskCollection));
                             break;
                     }
@@ -129,5 +130,62 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         });
+
+        // Moving cards to left
+        Array.from(moveCardLeft).forEach((arrowLeft) => {
+            arrowLeft.addEventListener("click", () => {
+                let index = arrowLeft.parentNode.parentNode.getElementsByClassName("identificator")[0].textContent;
+
+                switch(arrowLeft.parentElement.parentElement.parentElement.parentElement.parentElement.id) {
+                    case "uncompletedTasks":
+                        break;
+                    case "pendingTasks":
+                        todoTaskCollection.push(pendingTaskCollection[index]);
+                        pendingTaskCollection.splice(index, 1);
+                        localStorage.setItem("todoTaskCollection", JSON.stringify(todoTaskCollection));
+                        localStorage.setItem("pendingTaskCollection", JSON.stringify(pendingTaskCollection));
+                        break;
+                    case "completedTasks":
+                        pendingTaskCollection.push(completedTaskCollection[index]);
+                        completedTaskCollection.splice(index, 1);
+                        localStorage.setItem("pendingTaskCollection", JSON.stringify(pendingTaskCollection));
+                        localStorage.setItem("completedTaskCollection", JSON.stringify(completedTaskCollection));
+                        break;
+                }
+                location.reload();
+            });
+        });
+
+        // Moving cards to right
+        Array.from(moveCardRight).forEach((arrowRight) => {
+            arrowRight.addEventListener("click", () => {
+                let index = arrowRight.parentNode.parentNode.getElementsByClassName("identificator")[0].textContent;
+
+                switch(arrowRight.parentElement.parentElement.parentElement.parentElement.parentElement.id) {
+                    case "uncompletedTasks":
+                        pendingTaskCollection.push(todoTaskCollection[index]);
+                        todoTaskCollection.splice(index, 1);
+                        localStorage.setItem("todoTaskCollection", JSON.stringify(todoTaskCollection));
+                        localStorage.setItem("pendingTaskCollection", JSON.stringify(pendingTaskCollection));
+                        break;
+                    case "pendingTasks":
+                        completedTaskCollection.push(pendingTaskCollection[index]);
+                        pendingTaskCollection.splice(index, 1);
+                        localStorage.setItem("completedTaskCollection", JSON.stringify(completedTaskCollection));
+                        localStorage.setItem("pendingTaskCollection", JSON.stringify(pendingTaskCollection));
+                        break;
+                    case "completedTasks":
+                        break;
+                }
+                location.reload();
+            });
+        });
+    }
+
+    function HideCard(){
+        CARD_ADD.textContent = CARD_ADD.textContent.slice(0, -1) + "▼";
+        CARD_FORM.style.display = "none";
+        CARD_TITLE.value = "";
+        CARD_DESCRIPTION.value = "";
     }
 });
