@@ -22,6 +22,9 @@ th {
 #defaultTable tr td {
     border: 1px solid white;
     display:fixed;
+    padding: 0;
+    height:100%;
+    vertical-align: top;
 }
 #uncompletedTasks, #pendingTasks, #completedTasks{
     margin: 12px;
