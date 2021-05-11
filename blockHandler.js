@@ -33,70 +33,45 @@ document.addEventListener("DOMContentLoaded", () => {
             CARD_ADD.textContent = CARD_ADD.textContent.slice(0, -1) + "▲";
             CARD_FORM.style.display = "inline";
         }
-        else HideCard();
+        else hideCard();
     });
 
     SUBMIT_CARD.addEventListener("click", () => {
-        let taskJSON = {title: CARD_TITLE.value, description: CARD_DESCRIPTION.value, duedate: today};
-        todoTaskCollection.push(taskJSON);
-        HideCard();
-        render();
-        reload();
+        if(CARD_TITLE.value === "") {
+            alert("Cannot create a card without a title!")
+        }
+        else {
+            let taskJSON = {title: CARD_TITLE.value, description: CARD_DESCRIPTION.value, duedate: today};
+            todoTaskCollection.push(taskJSON);
+            hideCard();
+            render();
+            reload();
+        }
     });
     
     function render(){
-
-        let 
-            uncompletedTasks = document.getElementById('uncompletedTasks'),
-            pendingTasks = document.getElementById('pendingTasks'),
-            completedTasks = document.getElementById('completedTasks');
+        let uncompletedTasks = document.getElementById('uncompletedTasks');
+        let pendingTasks = document.getElementById('pendingTasks');
+        let completedTasks = document.getElementById('completedTasks');
 
         uncompletedTasks.innerHTML = "";
         pendingTasks.innerHTML = "";
         completedTasks.innerHTML = "";
         
         todoTaskCollection.forEach((todoTask, index) => {
-            let task = `
-                <td class="taskCard">
-                    <p class="identificator" style="display:none;">${index}</p>
-                    <h2 class="cardTitle">>> ${todoTask.title}</h2>
-                    <p>${todoTask.description}</p>
-                    <p>${todoTask.duedate}</p>
-                    <div align="center">
-                        <span class="delete" style="color: red;">X</span><span class="moveLeft"><</span><span class="moveRight">></span>
-                    </div>
-                </td>`
+            let task = insertInString(index, todoTask.title, todoTask.description, todoTask.duedate);
 
             uncompletedTasks.innerHTML += task;
             localStorage.setItem("todoTaskCollection", JSON.stringify(todoTaskCollection));
         });
         pendingTaskCollection.forEach((todoTask, index) => {
-            let task = `
-                <td class="taskCard">
-                    <p class="identificator" style="display:none;">${index}</p>
-                    <h2 class="cardTitle">>> ${todoTask.title}</h2>
-                    <p>${todoTask.description}</p>
-                    <p>${todoTask.duedate}</p>
-                    <div align="center">
-                        <span class="delete" style="color: red;">X</span><span class="moveLeft"><</span><span class="moveRight">></span>
-                    </div>
-                </td>`
+            let task = insertInString(index, todoTask.title, todoTask.description, todoTask.duedate);
 
             pendingTasks.innerHTML += task;
             localStorage.setItem("pendingTaskCollection", JSON.stringify(pendingTaskCollection));
         });
         completedTaskCollection.forEach((todoTask, index) => {
-            let task = `
-                <td class="taskCard">
-                    <p class="identificator" style="display:none;">${index}</p>
-                    <h2 class="cardTitle">>> ${todoTask.title}</h2>
-                    <p>${todoTask.description}</p>
-                    <p>${todoTask.duedate}</p>
-                    <div align="center">
-                        <span class="delete" style="color: red;">X</span><span class="moveLeft"><</span><span class="moveRight">></span>
-                    </div>
-                </td>`
-
+            let task = insertInString(index, todoTask.title, todoTask.description, todoTask.duedate);
             completedTasks.innerHTML += task;
             localStorage.setItem("completedTaskCollection", JSON.stringify(completedTaskCollection));
         });
@@ -110,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(confirm("Are you sure you want to delete this task?")){
                     let index = card.parentNode.parentNode.getElementsByClassName("identificator")[0].textContent;
 
-                    switch(card.parentElement.parentElement.parentElement.parentElement.parentElement.id) {
+                    switch(card.parentElement.parentElement.parentElement.parentElement.parentElement.id){
                         case "uncompletedTasks":
                             todoTaskCollection.splice(index, 1);
                             localStorage.setItem("todoTaskCollection", JSON.stringify(todoTaskCollection));
@@ -136,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
             arrowLeft.addEventListener("click", () => {
                 let index = arrowLeft.parentNode.parentNode.getElementsByClassName("identificator")[0].textContent;
 
-                switch(arrowLeft.parentElement.parentElement.parentElement.parentElement.parentElement.id) {
+                switch(arrowLeft.parentElement.parentElement.parentElement.parentElement.parentElement.id){
                     case "uncompletedTasks":
                         break;
                     case "pendingTasks":
@@ -161,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
             arrowRight.addEventListener("click", () => {
                 let index = arrowRight.parentNode.parentNode.getElementsByClassName("identificator")[0].textContent;
 
-                switch(arrowRight.parentElement.parentElement.parentElement.parentElement.parentElement.id) {
+                switch(arrowRight.parentElement.parentElement.parentElement.parentElement.parentElement.id){
                     case "uncompletedTasks":
                         pendingTaskCollection.push(todoTaskCollection[index]);
                         todoTaskCollection.splice(index, 1);
@@ -182,10 +157,23 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function HideCard(){
+    function hideCard(){
         CARD_ADD.textContent = CARD_ADD.textContent.slice(0, -1) + "▼";
         CARD_FORM.style.display = "none";
         CARD_TITLE.value = "";
         CARD_DESCRIPTION.value = "";
+    }
+
+    function insertInString(index, title, desc, dueDate){
+        return `
+        <td class="taskCard">
+            <p class="identificator" style="display:none;">${index}</p>
+            <h2 class="cardTitle">>> ${title}</h2>
+            <p>${desc}</p>
+            <p>${dueDate}</p>
+            <div align="center">
+                <span class="delete" style="color: red;">X</span><span class="moveLeft"><</span><span class="moveRight">></span>
+            </div>
+        </td>`
     }
 });
